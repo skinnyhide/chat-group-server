@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const ObjectId = mongoose.Types.ObjectId;
+const ObjectId = mongoose.Schema.Types.ObjectId;
 
 const channelSchema = new mongoose.Schema({
   name: { type: String, required: true },

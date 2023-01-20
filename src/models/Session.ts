@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const ObjectId = mongoose.Types.ObjectId;
+const ObjectId = mongoose.Schema.Types.ObjectId;
 
 const sessionSchema = new mongoose.Schema({
   user: { type: ObjectId, ref: "user", required: true },
