@@ -13,7 +13,7 @@ async function create(req: Request, res: Response) {
   if (!(name && username && password)) {
     return res.status(400).send({ message: "Some keys is missing" });
   }
-  const exist = await User.findOne({ username });
+  const exist = (await User.findOne({ username })) || (await Channel.findOne({ username }));
 
   if (exist) {
     return res.status(409).send({ message: "Username is not available" });
