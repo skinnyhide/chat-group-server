@@ -4,6 +4,7 @@ const ObjectId = mongoose.Schema.Types.ObjectId;
 
 const channelSchema = new mongoose.Schema({
   name: { type: String, required: true },
+  username: { type: String, required: true, unique: true },
   description: { type: String },
   creator: { type: ObjectId, ref: "user", required: true },
   type: { type: String, enum: ["private", "public"], required: true },
