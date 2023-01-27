@@ -11,9 +11,11 @@ ChannelRoute.post("/create", ChannelController.create);
 ChannelRoute.post("/update", ChannelController.update);
 ChannelRoute.post("/add/admin", ChannelController.addAdmin);
 ChannelRoute.post("/add/mod", ChannelController.addModerator);
+ChannelRoute.post("/add/member", ChannelController.join);
 
 ChannelRoute.delete("/remove/admin", ChannelController.removeAdmin);
 ChannelRoute.delete("/remove/mod", ChannelController.removeModerator);
+ChannelRoute.delete("/remove/member", ChannelController.left);
 ChannelRoute.delete("/remove/:username", ChannelController.remove);
 
 export default ChannelRoute;

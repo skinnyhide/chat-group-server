@@ -12,8 +12,6 @@ UserRoute.post("/create", UserController.create);
 UserRoute.post("/changeName", UserController.changeName);
 UserRoute.post("/changeUsername", UserController.changeUsername);
 UserRoute.post("/changePassword", UserController.changePassword);
-UserRoute.post("/joinChannel", UserController.joinChannel);
-UserRoute.post("/leftChannel", UserController.leftChannel);
 
 UserRoute.delete("/remove/:userId", UserController.remove);
 

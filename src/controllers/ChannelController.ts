@@ -42,6 +42,68 @@ async function remove(req: Request, res: Response) {
   return res.send(await Channel.deleteOne({ _id: channel._id }));
 }
 
+async function join(req: Request, res: Response) {
+  const { userId, channelId } = req.body;
+
+  if (!validObjectId(userId)) {
+    return res.status(400).send({ message: "User id is not valid" });
+  }
+  if (!validObjectId(channelId)) {
+    return res.status(400).send({ message: "Channel id is not valid" });
+  }
+  const channel = await Channel.findOne({ _id: channelId });
+
+  if (!channel) {
+    return res.status(404).send({ message: "Channel is not exist" });
+  }
+  const user = await User.findOne({ _id: userId });
+
+  if (!user) {
+    return res.status(404).send({ message: "User is not exist" });
+  }
+  if (user.channels.includes(channel._id)) {
+    return res.status(409).send({ message: "Already join channel" });
+  }
+  await Channel.updateOne({ _id: channelId }, { $inc: { totalMembers: 1 } });
+
+  return res.send(
+    await User.updateOne({ _id: user._id }, { $push: { channels: channel._id } })
+      .select("-password")
+      .select("-channels")
+  );
+}
+
+async function left(req: Request, res: Response) {
+  const { userId, channelId } = req.body;
+
+  if (!validObjectId(userId)) {
+    return res.status(400).send({ message: "User id is not valid" });
+  }
+  if (!validObjectId(channelId)) {
+    return res.status(400).send({ message: "Channel id is not valid" });
+  }
+  const channel = await Channel.findOne({ _id: channelId });
+
+  if (!channel) {
+    return res.status(404).send({ message: "Channel is not exist" });
+  }
+  const user = await User.findOne({ _id: userId });
+
+  if (!user) {
+    return res.status(404).send({ message: "User is not exist" });
+  }
+  if (!user.channels.includes(channel._id)) {
+    return res.status(404).send({ message: "User is not member of the channel" });
+  }
+  await Channel.updateOne({ _id: channelId }, { $inc: { totalMembers: -1 } });
+
+  return res.send(
+    await User.updateOne({ _id: user._id }, { $pull: { channels: channel._id } })
+      .select("-password")
+      .select("-channels")
+  );
+}
+
 async function getPublicChannels(req: Request, res: Response) {
   return res.send(await Channel.find({ type: "public" }));
 }
@@ -258,6 +320,8 @@ async function removeModerator(req: Request, res: Response) {
 export default {
   create,
   remove,
+  join,
+  left,
   getPublicChannels,
   getChannel,
   getChannelMembers,

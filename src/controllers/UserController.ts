@@ -137,64 +137,6 @@ async function changePassword(req: Request, res: Response) {
   );
 }
 
-async function joinChannel(req: Request, res: Response) {
-  const { userId, channelId } = req.body;
-
-  if (!validObjectId(channelId)) {
-    return res.status(400).send({ message: "Channel id is not valid" });
-  }
-  if (!validObjectId(userId)) {
-    return res.status(400).send({ message: "User id is not valid" });
-  }
-  const channel = await Channel.findOne({ _id: new ObjectId(channelId) });
-
-  if (!channel) {
-    return res.status(404).send({ message: "Channel is not exist" });
-  }
-  const user = await User.findOne({ _id: new ObjectId(userId) });
-
-  if (!user) {
-    return res.status(404).send({ message: "User is not exist" });
-  }
-  if (user.channels.includes(channel._id)) {
-    return res.status(409).send({ message: "Already join channel" });
-  }
-  return res.send(
-    await User.updateOne({ _id: user._id }, { $push: { channels: channel._id } })
-      .select("-password")
-      .select("-channels")
-  );
-}
-
-async function leftChannel(req: Request, res: Response) {
-  const { userId, channelId } = req.body;
-
-  if (!validObjectId(channelId)) {
-    return res.status(400).send({ message: "Channel id is not valid" });
-  }
-  if (!validObjectId(userId)) {
-    return res.status(400).send({ message: "User id is not valid" });
-  }
-  const channel = await Channel.findOne({ _id: new ObjectId(channelId) });
-
-  if (!channel) {
-    return res.status(404).send({ message: "Channel is not exist" });
-  }
-  const user = await User.findOne({ _id: new ObjectId(userId) });
-
-  if (!user) {
-    return res.status(404).send({ message: "User is not exist" });
-  }
-  if (!user.channels.includes(channel._id)) {
-    return res.status(404).send({ message: "User is not member of the channel" });
-  }
-  return res.send(
-    await User.updateOne({ _id: user._id }, { $pull: { channels: channel._id } })
-      .select("-password")
-      .select("-channels")
-  );
-}
-
 export default {
   create,
   remove,
@@ -205,6 +147,4 @@ export default {
   changeUsername,
   checkUsernameExist,
   changePassword,
-  joinChannel,
-  leftChannel,
 };
